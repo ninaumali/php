@@ -66,4 +66,42 @@ function delete($id){
         return false;
         }
     }
+    function viewdata($id){ 
+        try {
+            $con = $this->opencon();
+            $query = $con->prepare("SELECT users.user_id, users.user_name, users.pass_word, users.firstName, users.lastName, users.birthday, users.sex, user_address.user_add_street, user_address.user_add_barangay,user_address.user_add_city,user_address.user_add_province FROM users JOIN user_address ON users.user_id=user_address.user_id WHERE users.user_id = ?");
+            $query->execute([$id]);
+            return $query->fetch();
+        } catch (PDOException $e) {
+            return [];
+}
+    }
+    function updateUser($user_id, $firstName, $lastName, $birthday, $sex, $username, $password) {
+        try {
+            $con = $this->opencon();
+            $con->beginTransaction();
+            $query = $con->prepare("UPDATE users SET first_name=?, last_name=?, birthday=?, sex=? user_name=? pass_word=? WHERE user_id=?");
+            $query->execute([$firstName, $lastName, $birthday, $sex, $username, $password, $user_id]);
+            // Update Successful
+            $con->commit();
+        } catch (PDOException $e) {
+            // Handle the exception (e.g., log error, return false, etc.)
+            $con->rollBack();
+            return false;	// Update failed
+        }   	
+    } 
+    function updateUserAddress($user_id, $street, $barangay, $city, $province) {
+        try {
+            $con = $this->opencon();
+            $con->beginTransaction();
+            $query = $con->prepare("UPDATE users SET user_add_street=?, user_add_barangay=?, user_add_city=?, user_add_province=? WHERE user_id=?");
+            $query->execute([$street, $barangay, $city, $province, $user_id]);
+            // Update Successful
+            $con->commit();
+        } catch (PDOException $e) {
+            // Handle the exception (e.g., log error, return false, etc.)
+            $con->rollBack();
+            return false;	// Update failed
+        }   	
+    } 
 }

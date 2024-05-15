@@ -60,7 +60,12 @@ if (isset($_POST['delete'])) {
           <td><?php echo $rows['user_name'];?></td>
           <td><?php echo $rows['address'];?></td>
           <td>
-          <a href="#" class="btn btn-primary btn-sm">Edit</a>
+
+          <form action="update.php" method="post" style="display: inline;">
+            <input type="hidden" name="id" value="<?php echo $rows ['user_id'];?>">
+            <input type="submit" name="Update" value="Update" class="btn btn-primary btn-sm">
+        </form>
+
         <!-- Delete button -->
         <form method="POST" style="display: inline;">
             <input type="hidden" name="id" value="<?php echo $rows ['user_id'];?>">
