@@ -1,76 +1,76 @@
 <?php
-    require_once('classes/database.php');
-    $con = new database();
+require_once('classes/database.php');
+$con = new database();
+session_start();
 
-    if (empty($_POST['id'])) {
-        header('location:index.php');
-    } else {
+if (empty($id = $_POST['id'])) {
+     header('location:index.php');
+    }else{
+      
         $id = $_POST['id'];
         $data = $con->viewdata($id);
     }
-if (isset($_POST['update'])) {
-    //User Information
-    $firstName = $_POST['firstName'];
-    $lastName = $_POST['lastName'];
-    $birthday = $_POST['birthday'];
-    $sex = $_POST['sex'];
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    $confirm = $_POST['c_pass'];
     
-    //Address Information
-    $street = $_POST['street'];
-    $barangay = $_POST['barangay'];
-    $city = $_POST['city'];
-    $province = $_POST['province'];
-    //User Id    
-    $user_id = $_POST['id'];
 
-    if ($password == $confirm) {
-        if ($con->updateUser($user_id, $firstName, $lastName, $birthday, $sex, $username, $password)) {
+    if(isset($_POST['update'])) {
+        //user information 
+        $firstname = $_POST['firstName'];
+        $lastname = $_POST['lastName'];
+        $birthday = $_POST['birthday'];
+        $sex = $_POST['sex'];
+        $username = $_POST['user_name'];
+        $password = $_POST['pass_word'];
+        $confirm = $_POST['c_pass'];
+        
+        //address information
+        $street =$_POST['street'];
+        $barangay = $_POST['barangay'];
+        $city = $_POST['city'];
+        $province = $_POST['province'];
+        $user_id = $_POST['id'];
 
-            //Update user address
+        echo $user_id;
+
+        if(1 == 1) {
+          echo 'I am here 1';
+            if ($con->updateUser($user_id, $firstname, $lastname, $birthday,$sex, $username, $password)) {
+            // Update user address
             if ($con->updateUserAddress($user_id, $street, $barangay, $city, $province)) {
+                // Both updates successful, redirect to a success page or display a success message
                 header('location:index.php');
                 exit();
+                
             } else {
-                // User Address update failed 
-                $error = "Error occured while updating user address. Please try again.";
+            //     // User address update failed
+                $error = "Error occurred while updating user address. Please try again.";
+             }
+        } else {
+            // User update failed
+            $error = "Error occurred while updating user information. Please try again.";
         }
-    } else {
-        // user update failed
-        $error = "Error occured while updating user information. Please try again.";
     }
-    	}
 }
-
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MultiSave Page</title>
+  <title>Update Page</title>
   <link rel="stylesheet" href="./bootstrap-5.3.3-dist/css/bootstrap.css">
   <!-- Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-  <style>
-    .custom-container{
-        width: 800px;
-    }
-    body{
-    font-family: 'Roboto', sans-serif;
-    }
-  </style>
+  <link rel="stylesheet" href="./includes/style.php">
 
 </head>
 <body>
 
 <div class="container custom-container rounded-3 shadow my-5 p-3 px-5">
-  <h3 class="text-center mt-4"> Update Form</h3>
-  <form method="post">
+  <h3 class="text-center mt-4"> Hello, <?php echo $data['firstName']?>!</h3>
+  <form method="POST">
     <!-- Personal Information -->
     <div class="card mt-4">
       <div class="card-header bg-info text-white">Personal Information</div>
@@ -78,40 +78,41 @@ if (isset($_POST['update'])) {
         <div class="form-row">
           <div class="form-group col-md-6 col-sm-12">
             <label for="firstName">First Name:</label>
-            <input type="text" class="form-control" name="firstName" placeholder="Enter first name" value="<?php echo $data['firstName'];?>">
+            <input type="text" class="form-control" value="<?php echo $data['firstName'];?>" name="firstName"  placeholder="Enter first name">
           </div>
           <div class="form-group col-md-6 col-sm-12">
             <label for="lastName">Last Name:</label>
-            <input type="text" class="form-control" name="lastName" placeholder="Enter last name" value="<?php echo $data['lastName'];?>">
+            <input type="text" class="form-control" name="lastName" value="<?php echo $data['lastName'];?>" placeholder="Enter last name">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group col-md-6">
             <label for="birthday">Birthday:</label>
-            <input type="date" class="form-control" name="birthday" value="<?php echo $data['birthday'];?>">
+            <input type="date" class="form-control" value="<?php echo $data['birthday'];?>"name="birthday">
           </div>
           <div class="form-group col-md-6">
             <label for="sex">Sex:</label>
             <select class="form-control" name="sex">
-              <option value='Male'<?php if ($data['sex'] === 'Male')
-              echo 'selected'; ?>>Male</option>
-              <option value='Female'<?php if ($data['sex'] === 'Female')
-              echo 'selected'; ?>>Female</option>
-            </select>
+            <option value="Male" <?php if ($data['sex'] === 'Male') echo 'selected'; ?>>Male</option>
+            <option value="Female" <?php if ($data['sex'] === 'Female') echo 'selected'; ?>>Female</option>
+          </select>
           </div>
         </div>
         <div class="form-group">
           <label for="username">Username:</label>
-          <input type="text" class="form-control" name="username" placeholder="Enter username" value="<?php echo $data['user_name'];?>">
+          <input type="text" class="form-control" name="user_name" value="<?php echo $data['user_name'];?>"  placeholder="Enter username">
+          
         </div>
         <div class="form-group">
           <label for="password">Password:</label>
-          <input type="password" class="form-control" name="password" placeholder="Enter password" value="<?php echo $data['pass_word'];?>">
+          <input type="password" class="form-control" value="<?php echo $data['pass_word'];?>"  name="pass_word" placeholder="Enter password">
         </div>
         <div class="form-group">
-          <label for="c_pass">Password:</label>
-          <input type="c_pass" class="form-control" name="c_pass" placeholder="Confirm password" value="<?php echo $data['pass_word'];?>">
-
+          <label for="password">Confirm Password:</label>
+          <input type="password" class="form-control" value="<?php echo $data['pass_word'];?>"  name="c_pass" placeholder="Confirm password">
+        </div>
+      </div>
+    </div>
     
     <!-- Address Information -->
     <div class="card mt-4">
@@ -119,39 +120,37 @@ if (isset($_POST['update'])) {
       <div class="card-body">
         <div class="form-group">
           <label for="street">Street:</label>
-          <input type="text" class="form-control" name="street" placeholder="Enter street" value="<?php echo $data['user_add_street'];?>">
+          <input type="text" class="form-control" name="street" value="<?php echo $data['user_add_street'];?>"  placeholder="Enter street">
         </div>
         <div class="form-row">
           <div class="form-group col-md-6">
             <label for="barangay">Barangay:</label>
-            <input type="text" class="form-control" name="barangay" placeholder="Enter barangay" value="<?php echo $data['user_add_barangay'];?>">
+            <input type="text" class="form-control" name="barangay" value="<?php echo $data['user_add_barangay'];?>" placeholder="Enter barangay">
           </div>
           <div class="form-group col-md-6">
             <label for="city">City:</label>
-            <input type="text" class="form-control" name="city" placeholder="Enter city" value="<?php echo $data['user_add_city'];?>">
+            <input type="text" class="form-control" name="city"  value="<?php echo $data['user_add_city'];?> " placeholder="Enter city">
           </div>
         </div>
         <div class="form-group">
           <label for="province">Province:</label>
-          <input type="text" class="form-control" name="province" placeholder="Enter province" value="<?php echo $data['user_add_province'];?>">
+          <input type="text" class="form-control" name="province" value="<?php echo $data['user_add_province'];?> " placeholder="Enter province">
         </div>
-      </div>
-    </div>
-    </div>
-      </div>
       </div>
     </div>
     
     <!-- Submit Button -->
+
     
     <div class="container">
     <div class="row justify-content-center gx-0">
         <div class="col-lg-3 col-md-4"> 
-            <input type="hidden" name="id" value="<?php echo $data ['user_id'];?>">
-            <input type="submit" name="update" class="btn btn-outline-primary btn-block mt-4" value="Sign Up">
+        <input type="hidden" name="id" value="<?php echo $data['user_id']; ?>">
+            <input type="submit" name="update" class="btn btn-outline-primary btn-block mt-4" value="Update">
+
         </div>
         <div class="col-lg-3 col-md-4"> 
-            <a class="btn btn-outline-danger btn-block mt-4" href="login.php">Go Back</a>
+            <a class="btn btn-outline-danger btn-block mt-4" href="index2.php">Go Back</a>
         </div>
     </div>
 </div>
@@ -159,7 +158,6 @@ if (isset($_POST['update'])) {
 
   </form>
 </div>
-
 
 <!-- Bootstrap JS and dependencies -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

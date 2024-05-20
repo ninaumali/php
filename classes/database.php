@@ -80,10 +80,11 @@ function delete($id){
         try {
             $con = $this->opencon();
             $con->beginTransaction();
-            $query = $con->prepare("UPDATE users SET first_name=?, last_name=?, birthday=?, sex=? user_name=? pass_word=? WHERE user_id=?");
+            $query = $con->prepare("UPDATE users SET firstName=?, lastName=?, birthday=?, sex=?, user_name=?, pass_word=? WHERE user_id=?");
             $query->execute([$firstName, $lastName, $birthday, $sex, $username, $password, $user_id]);
             // Update Successful
             $con->commit();
+            return true;
         } catch (PDOException $e) {
             // Handle the exception (e.g., log error, return false, etc.)
             $con->rollBack();
@@ -94,14 +95,16 @@ function delete($id){
         try {
             $con = $this->opencon();
             $con->beginTransaction();
-            $query = $con->prepare("UPDATE users SET user_add_street=?, user_add_barangay=?, user_add_city=?, user_add_province=? WHERE user_id=?");
+            $query = $con->prepare("UPDATE user_address SET user_add_street=?, user_add_barangay=?, user_add_city=?, user_add_province=? WHERE user_id=?");
             $query->execute([$street, $barangay, $city, $province, $user_id]);
             // Update Successful
             $con->commit();
+            return true;
         } catch (PDOException $e) {
             // Handle the exception (e.g., log error, return false, etc.)
             $con->rollBack();
             return false;	// Update failed
         }   	
-    } 
+    }
+
 }
