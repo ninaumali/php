@@ -139,9 +139,11 @@ if (isset($_POST['multisave'])) {
         </div>
           <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" class="form-control" name="email" placeholder="Enter email" required>
+            <input type="email" class="form-control" name="email" id="email" placeholder="Enter email" required>
             <div class="valid-feedback">Looks good!</div>
             <div class="invalid-feedback">Please enter a valid email.</div>
+            <div id="emailFeedback" class="invalid-feedback"></div>
+        </div>
           </div>
           <div class="form-group">
             <label for="password">Password:</label>
@@ -149,7 +151,6 @@ if (isset($_POST['multisave'])) {
             <div class="valid-feedback">Looks good!</div>
             <div class="invalid-feedback">Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character.</div>
           </div>
-
           <div class="form-group">
             <label for="confirmPassword">Confirm Password:</label>
             <input type="password" class="form-control" name="confirmPassword" placeholder="Re-enter your password" required>
@@ -266,6 +267,7 @@ if (isset($_POST['multisave'])) {
 <script src="./bootstrap-5.3.3-dist/js/bootstrap.js"></script>
 <!-- Script for Address Selector -->
 <script src="ph-address-selector.js"></script>
+<!-- AJAX for live checking of existing usernames -->
 <script>
 $(document).ready(function(){
     $('#username').on('input', function(){
@@ -295,9 +297,41 @@ $(document).ready(function(){
         }
     });
 });
-
+ 
 </script>
-
+<!-- AJAX for live checking of existing email -->
+<script>
+$(document).ready(function(){
+    $('#email').on('input', function(){
+        var email = $(this).val();
+        if(email.length > 0) {
+            $.ajax({
+                url: 'check_email.php',
+                method: 'POST',
+                data: {email: email},
+                dataType: 'json',
+                success: function(response) {
+                    if(response.exists) {
+                        $('#email').removeClass('is-valid').addClass('is-invalid');
+                        $('#emailFeedback').text('Email is already taken.');
+                        $('#nextButton').prop('disabled', true); // Disable the Next button
+                    } else {
+                        $('#email').removeClass('is-invalid').addClass('is-valid');
+                        $('#emailFeedback').text('');
+                        $('#nextButton').prop('disabled', false); // Enable the Next button
+                    }
+                }
+            });
+        } else {
+            $('#email').removeClass('is-valid is-invalid');
+            $('#emailFeedback').text('');
+            $('#nextButton').prop('disabled', false); // Enable the Next button if username is empty
+        }
+    });
+});
+ 
+</script>
+ 
 <!-- Script for Form Validation -->
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -305,21 +339,21 @@ $(document).ready(function(){
       const birthdayInput = document.getElementById("birthday");
       const steps = document.querySelectorAll(".form-step");
       let currentStep = 0;
-
-
-  
+ 
+ 
+ 
       // Set the max attribute of the birthday input to today's date
       const today = new Date().toISOString().split('T')[0];    
       birthdayInput.setAttribute('max', today);
-
+ 
       // Add event listeners for real-time validation
       const inputs = form.querySelectorAll("input, select");
       inputs.forEach(input => {
         input.addEventListener("input", () => validateInput(input));
         input.addEventListener("change", () => validateInput(input));
       });
-
-      //MultiStep Logic 
+ 
+      //MultiStep Logic
   // Add an event listener to the form's submit event
   form.addEventListener("submit", (event) => {
   // Prevent form submission if the current step is not valid
@@ -327,11 +361,11 @@ $(document).ready(function(){
     event.preventDefault();
     event.stopPropagation();
   }
-
+ 
   // Add the 'was-validated' class to the form for Bootstrap styling
   form.classList.add("was-validated");
 }, false);
-
+ 
 // Function to move to the next step
 window.nextStep = () => {
   // Only proceed to the next step if the current step is valid
@@ -341,31 +375,31 @@ window.nextStep = () => {
     steps[currentStep].classList.add("form-step-active"); // Show the next step
   }
 };
-
+ 
 // Function to move to the previous step
 window.prevStep = () => {
   steps[currentStep].classList.remove("form-step-active"); // Hide the current step
   currentStep--; // Decrement the current step index
   steps[currentStep].classList.add("form-step-active"); // Show the previous step
 };
-
+ 
 // Function to validate all inputs in the current step
 function validateStep(step) {
   let valid = true;
   // Select all input and select elements in the current step
   const stepInputs = steps[step].querySelectorAll("input, select");
-
+ 
   // Validate each input element
   stepInputs.forEach(input => {
     if (!validateInput(input)) {
       valid = false; // If any input is invalid, set valid to false
     }
   });
-
+ 
   return valid; // Return the overall validity of the step
 }
-
-  
+ 
+ 
       function validateInput(input) {
         if (input.name === 'password') {
           return validatePassword(input);
@@ -383,7 +417,7 @@ function validateStep(step) {
           }
         }
       }
-  
+ 
       function validatePassword(passwordInput) {
         const password = passwordInput.value;
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
@@ -397,12 +431,12 @@ function validateStep(step) {
           return false;
         }
       }
-  
+ 
       function validateConfirmPassword(confirmPasswordInput) {
         const passwordInput = form.querySelector("input[name='password']");
         const password = passwordInput.value;
         const confirmPassword = confirmPasswordInput.value;
-      
+     
         if (password === confirmPassword && password !== '') {
           confirmPasswordInput.classList.remove("is-invalid");
           confirmPasswordInput.classList.add("is-valid");
@@ -413,18 +447,18 @@ function validateStep(step) {
           return false;
         }
       }
-
+ 
        document.addEventListener("keydown", (event) => {
         if (event.key === 'Enter') {
             event.preventDefault(); // Prevent form submission
         }
     });
-
-
-      
-    
+ 
+ 
+     
+   
 });</script>
-  
+ 
   </body>
   </html>
-  
+ 
