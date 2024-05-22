@@ -23,30 +23,30 @@ class database{
         return $query->execute([$username, $password, $firstname, $lastname, $birthday,$sex]);
     }
 
-    function signupUser($username, $password, $firstName, $lastName, $birthday, $sex) {
-        $con = $this->opencon();
+//     function signupUser($username, $password, $firstName, $lastName, $birthday, $sex) {
+//         $con = $this->opencon();
  
-        $query = $con->prepare("SELECT user_name FROM users WHERE user_name = ?");
-        $query->execute([$username]);
-        $existingUser= $query->fetch();
-        if ($existingUser){
-            return false;
-        }
-        $query = $con->prepare("INSERT INTO users (firstName, lastName, birthday, sex, user_name, pass_word) VALUES (?, ?, ?, ?, ?,?)");
-        $query->execute([$firstName, $lastName, $birthday, $sex, $username, $password]); 
-        return $con->lastInsertId();
-    }
+//         $query = $con->prepare("SELECT user_name FROM users WHERE user_name = ?");
+//         $query->execute([$username]);
+//         $existingUser= $query->fetch();
+//         if ($existingUser){
+//             return false;
+//         }
+//         $query = $con->prepare("INSERT INTO users (firstName, lastName, birthday, sex, user_name, pass_word) VALUES (?, ?, ?, ?, ?,?)");
+//         $query->execute([$firstName, $lastName, $birthday, $sex, $username, $password]); 
+//         return $con->lastInsertId();
+//     }
 
-    function insertAddress($user_id, $street, $barangay, $city, $province) {
-        $con = $this->opencon();
-        return $con->prepare("INSERT INTO user_address (user_id, user_add_street, user_add_barangay, user_add_city, user_add_province) VALUES (?, ?, ?, ?, ?)")
-        ->execute([$user_id, $street, $barangay, $city, $province]);
- }
+//     function insertAddress($user_id, $street, $barangay, $city, $province) {
+//         $con = $this->opencon();
+//         return $con->prepare("INSERT INTO user_address (user_id, user_add_street, user_add_barangay, user_add_city, user_add_province) VALUES (?, ?, ?, ?, ?)")
+//         ->execute([$user_id, $street, $barangay, $city, $province]);
+//  }
  
     function view()
     {
         $con = $this->opencon();
-        return $con->query("SELECT users.user_id, users.user_name, users.pass_word, users.firstName, users.lastName, users.birthday, users.sex, CONCAT(user_address.user_add_street,' ', user_address.user_add_barangay,' ', user_address.user_add_city,' ', user_address.user_add_province) AS address FROM users JOIN user_address ON users.user_id=user_address.user_id")->fetchAll();
+        return $con->query("SELECT users.user_id, users.user_name, users.pass_word, users.firstName, users.lastName, users.user_profile_picture, users.birthday, users.sex, CONCAT(user_address.user_add_street,' ', user_address.user_add_barangay,' ', user_address.user_add_city,' ', user_address.user_add_province) AS address FROM users JOIN user_address ON users.user_id=user_address.user_id")->fetchAll();
 } 
 function delete($id){
     try {
@@ -91,6 +91,21 @@ function delete($id){
             return false;	// Update failed
         }   	
     } 
+    function signupUser($firstname, $lastname, $birthday, $sex, $email, $username, $password, $profilePicture)
+    {
+        $con = $this->opencon();
+        // Save user data along with profile picture path to the database
+        $con->prepare("INSERT INTO users (firstName, lastName, birthday, sex, user_email, user_name, pass_word, user_profile_picture) VALUES (?,?,?,?,?,?,?,?)")->execute([$firstname, $lastname, $birthday, $sex, $email, $username, $password, $profilePicture]);
+        return $con->lastInsertId();
+        }
+    
+    
+    function insertAddress($user_id, $street, $barangay, $city, $province)
+    {
+        $con = $this->opencon();
+        return $con->prepare("INSERT INTO user_address (user_id, user_add_street, user_add_barangay, user_add_city, user_add_province) VALUES (?,?,?,?,?)")->execute([$user_id, $street, $barangay,  $city, $province]);
+          
+    }
     function updateUserAddress($user_id, $street, $barangay, $city, $province) {
         try {
             $con = $this->opencon();
