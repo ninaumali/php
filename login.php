@@ -15,10 +15,14 @@ if (isset($_POST['login'])) {
 
   if ($result) {
       $_SESSION['username'] = $result['user_name'];
-      header('location:index.php');
+      if ($result['account_type'] == 0) {
+        header('location:index.php');
+  } else if ($result['account_type'] == 1) {
+      header('location:user_account.php');
   } else {
-      $error = "Incorrect username or password. Please try again.";
+    $error = "Incorrect username or password. Please try again.";
   }
+}
 }
 
 ?>
@@ -32,7 +36,7 @@ if (isset($_POST['login'])) {
   <link rel="stylesheet" href="./bootstrap-5.3.3-dist/css/bootstrap.css">
   <!-- Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="includes/style.css">
 </head>
 <body>
 
