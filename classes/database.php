@@ -89,7 +89,7 @@ function delete($id){
     function viewdata($id){ 
         try {
             $con = $this->opencon();
-            $query = $con->prepare("SELECT users.user_id, users.user_name, users.pass_word, users.firstName, users.lastName, users.birthday, users.sex, user_address.user_add_street, user_address.user_add_barangay,user_address.user_add_city,user_address.user_add_province FROM users JOIN user_address ON users.user_id=user_address.user_id WHERE users.user_id = ?");
+            $query = $con->prepare("SELECT users.user_id, users.user_name, users.pass_word, users.firstName, users.lastName, users.birthday, users.sex, users.user_profile_picture, user_address.user_add_street, user_address.user_add_barangay,user_address.user_add_city,user_address.user_add_province FROM users JOIN user_address ON users.user_id=user_address.user_id WHERE users.user_id = ?");
             $query->execute([$id]);
             return $query->fetch();
         } catch (PDOException $e) {
@@ -140,6 +140,25 @@ function delete($id){
             $con->rollBack();
             return false;	// Update failed
         }   	
+    }
+    function validateCurrentPassword($userId, $currentPassword) {
+        // Open database connection
+        $con = $this->opencon();
+    
+        // Prepare the SQL query
+        $query = $con->prepare("SELECT pass_word FROM users WHERE user_id = ?");
+        $query->execute([$userId]);
+    
+        // Fetch the user data as an associative array
+        $user = $query->fetch(PDO::FETCH_ASSOC);
+    
+        // If a user is found, verify the password
+        if ($user && password_verify($currentPassword, $user['pass_word'])) {
+            return true;
+        }
+    
+        // If no user is found or password is incorrect, return false
+        return false;
     }
 
 }

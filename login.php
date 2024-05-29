@@ -15,6 +15,7 @@ if (isset($_POST['login'])) {
 
   if ($result) {
       $_SESSION['username'] = $result['user_name'];
+      $_SESSION['user_id'] = $result['user_id'];
       if ($result['account_type'] == 0) {
         header('location:index.php');
   } else if ($result['account_type'] == 1) {
