@@ -161,4 +161,34 @@ function delete($id){
         return false;
     }
 
+    function updatePassword($userId, $hashedPassword){
+        try {
+            $con = $this->opencon();
+            $con->beginTransaction();
+            $query = $con->prepare("UPDATE users SET pass_word = ? WHERE user_id = ?");
+            $query->execute([$hashedPassword, $userId]);
+            // Update successful
+            $con->commit();
+            return true;
+        } catch (PDOException $e) {
+            // Handle the exception (e.g., log error, return false, etc.)
+             $con->rollBack();
+            return false; // Update failed
+        }
+        }
+        function updateUserProfilePicture($userID, $profile_picture_path) {
+            try {
+                $con = $this->opencon();
+                $con->beginTransaction();
+                $query = $con->prepare("UPDATE users SET user_profile_picture = ? WHERE user_id = ?");
+                $query->execute([$profile_picture_path, $userID]);
+                // Update successful
+                $con->commit();
+                return true;
+            } catch (PDOException $e) {
+                // Handle the exception (e.g., log error, return false, etc.)
+                 $con->rollBack();
+                return false; // Update failed
+            }
+             }
 }
