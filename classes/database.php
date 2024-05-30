@@ -144,23 +144,22 @@ function delete($id){
     function validateCurrentPassword($userId, $currentPassword) {
         // Open database connection
         $con = $this->opencon();
-    
+   
         // Prepare the SQL query
         $query = $con->prepare("SELECT pass_word FROM users WHERE user_id = ?");
         $query->execute([$userId]);
-    
+   
         // Fetch the user data as an associative array
         $user = $query->fetch(PDO::FETCH_ASSOC);
-    
+   
         // If a user is found, verify the password
         if ($user && password_verify($currentPassword, $user['pass_word'])) {
             return true;
         }
-    
+   
         // If no user is found or password is incorrect, return false
         return false;
     }
-
     function updatePassword($userId, $hashedPassword){
         try {
             $con = $this->opencon();
@@ -176,12 +175,12 @@ function delete($id){
             return false; // Update failed
         }
         }
-        function updateUserProfilePicture($userID, $profile_picture_path) {
+        function updateUserProfilePicture($userID, $profilePicturePath) {
             try {
                 $con = $this->opencon();
                 $con->beginTransaction();
                 $query = $con->prepare("UPDATE users SET user_profile_picture = ? WHERE user_id = ?");
-                $query->execute([$profile_picture_path, $userID]);
+                $query->execute([$profilePicturePath, $userID]);
                 // Update successful
                 $con->commit();
                 return true;
